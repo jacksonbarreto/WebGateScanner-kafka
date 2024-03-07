@@ -13,7 +13,7 @@ type Consumer struct {
 	context              context.Context
 }
 
-func New(brokers []string, group string, topics []string, consumerGroupHandler sarama.ConsumerGroupHandler,
+func NewConsumer(brokers []string, group string, topics []string, consumerGroupHandler sarama.ConsumerGroupHandler,
 	context context.Context) (*Consumer, error) {
 	configConsumerGroup := sarama.NewConfig()
 	configConsumerGroup.Version = sarama.V2_0_0_0
