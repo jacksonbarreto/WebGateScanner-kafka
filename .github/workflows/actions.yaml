@@ -89,32 +89,9 @@ jobs:
           echo "new_tag= $new_tag"
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
-  build-and-push-docker-image:
-    name: Build and Push Docker Image
-    needs: [test, versioning]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build Docker image and push to DockerHub
-        run: |
-          REPO=$(echo "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')
-          TAG="${{ needs.versioning.outputs.new_tag }}"
-          echo "Tag= $TAG"
-          docker build . --file Dockerfile --tag $REPO:$TAG
-          docker push $REPO:$TAG
-          docker tag $REPO:$TAG $REPO:latest
-          docker push $REPO:latest
-
   push-tag-and-create-release:
     name: Push Tag and Create Release
-    needs: [test, versioning, build-and-push-docker-image]
+    needs: [test, versioning]
     runs-on: ubuntu-latest
     permissions:
       contents: write
