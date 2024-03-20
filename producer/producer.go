@@ -43,6 +43,21 @@ func (p *Producer) SendMessage(message string) (partition int32, offset int64, e
 	return partition, offset, nil
 }
 
+func (p *Producer) SendMessageToTopic(topic string, message string) (partition int32, offset int64, err error) {
+	msg := &sarama.ProducerMessage{
+		Topic: topic,
+		Value: sarama.StringEncoder(message),
+	}
+
+	partition, offset, err = p.syncProducer.SendMessage(msg)
+	if err != nil {
+		log.Printf("Failed to send message: %v", err)
+		return 0, 0, err
+	}
+
+	return partition, offset, nil
+}
+
 func (p *Producer) Close() error {
 	if err := p.syncProducer.Close(); err != nil {
 		log.Printf("Failed to close Kafka producer: %v", err)
